@@ -130,8 +130,36 @@ public class FarkleGame {
                         done = true;
                         turnOver = true;
                     } else if (letter == 'K') {
-                        done = true;
-                        totalScore += meldScore;
+                        if (meldScore > 0) {
+                            // Check if all 6 dice were used (Hot Hand upon banking)
+                            boolean hotHand = true;
+                            for (int dVal : activeDiceValues) {
+                                if (dVal != 0) {
+                                    hotHand = false;
+                                    break;
+                                }
+                            }
+
+                            if (hotHand) {
+                                System.out.println();
+                                System.out.println("***** HOT HAND! *****");
+                                System.out.println("You used all 6 dice! Rolling 6 new dice.");
+                                System.out.println("*********************");
+                                totalScore += meldScore;
+                                hand = new Hand(); // 6 new dice
+                                diceList = hand.getDice();
+                                for (int d = 0; d < 6; d++) {
+                                    activeDiceValues[d] = diceList.get(d).getValue();
+                                    meldValues[d] = 0;
+                                }
+                                // Reset done to keep the turn rolling with new dice
+                                done = true; 
+                            } else {
+                                totalScore += meldScore;
+                                done = true;
+                                turnOver = true;
+                            }
+                        }
                     } else if (letter == 'R') {
                         if (meldScore > 0) {
                             totalScore += meldScore;
