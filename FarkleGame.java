@@ -108,7 +108,7 @@ public class FarkleGame {
 
                 System.out.println("                Meld Score: " + meldScore);
                 System.out.println();
-                System.out.println(" (K) BanK Meld & End Round");
+                System.out.println(" (K) Bank Meld & End Round");
                 System.out.println(" (R) Reroll unmelded dice"); // Added missing semicolon here
                 System.out.println(" (Q) Quit game");
                 System.out.println();
