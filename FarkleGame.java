@@ -22,8 +22,7 @@ public class FarkleGame {
         System.out.println("************************************************************************");
         System.out.println();
 
-        // String player1Name = "Unknown Player";
-        System.out.println("Enter player 1 name: ");
+        System.out.print("Enter player 1 name: ");
         String player1Name = scanner.nextLine();
 
         if(player1Name.equals("")){
@@ -34,20 +33,26 @@ public class FarkleGame {
         System.out.println(player1Name + ", it is your turn! Rolling dice...");
         System.out.println();
 
-        hand.printHand();
-        int[] counts = hand.getValQuantities();
-
-        System.out.print("Quantity of each die value: ");
-        for (int i = 1; i < 7; i++) {
-            System.out.print(counts[i] + " ");
-        }
-        System.out.println();
-
         int totalScore = 0;
+        boolean turnOver = false;
+        
+        while (!turnOver) {
+        
+            hand.printHand();
+            int[] counts = hand.getValQuantities();
 
-        if (FarkleScorer.isFarkle(counts)) {
-            System.out.println("Farkle! Points: 0");
-        } else {
+            System.out.print("Quantity of each die value: ");
+            for (int i = 1; i < 7; i++) {
+                System.out.print(counts[i] + " ");
+            }
+            System.out.println();
+
+            if (FarkleScorer.isFarkle(counts)) {
+                System.out.println("Farkle! Points: 0");
+                turnOver = true;
+                break;
+            } 
+            
             String userInput = "";
             int meldScore = 0;
             int[] meldValues = {0, 0, 0, 0, 0, 0};
@@ -104,6 +109,7 @@ public class FarkleGame {
                 System.out.println("                Meld Score: " + meldScore);
                 System.out.println();
                 System.out.println(" (K) BanK Meld & End Round");
+                System.out.println(" (R) Reroll unmelded dice"); // Added missing semicolon here
                 System.out.println(" (Q) Quit game");
                 System.out.println();
                 System.out.print("Enter letters for your choice(s): ");
@@ -122,9 +128,45 @@ public class FarkleGame {
                         }
                     } else if (letter == 'Q') {
                         done = true;
+                        turnOver = true;
                     } else if (letter == 'K') {
                         done = true;
                         totalScore += meldScore;
+                    } else if (letter == 'R') {
+                        if (meldScore > 0) {
+                            totalScore += meldScore;
+                            done = true;
+
+                            // Check Hot Hand
+                            boolean hotHand = true;
+                            for (int dVal : activeDiceValues) {
+                                if (dVal != 0) {
+                                    hotHand = false;
+                                    break;
+                                }
+                            }
+
+                            if (hotHand) {
+                                System.out.println();
+                                System.out.println("***** HOT HAND! *****");
+                                System.out.println("Would you like to roll 6 new dice, or bank and end your turn?");
+                                System.out.println("*********************");
+                                hand = new Hand();
+                            } else {
+                                // Reroll unmelded dice
+                                ArrayList<Die> currentDice = hand.getDice();
+                                for (int dIdx = 0; dIdx < 6; dIdx++) {
+                                    if (activeDiceValues[dIdx] != 0) {
+                                        currentDice.get(dIdx).roll();
+                                    } else {
+                                        currentDice.get(dIdx).setValue(0);
+                                    }
+                                }
+                                hand.sort();
+                            }
+                        } else {
+                            System.out.println("Select scoring dice before rerolling!");
+                        }
                     }
                 }
             }
