@@ -15,6 +15,25 @@ public class FarkleGame {
         Scanner scanner = new Scanner(System.in);
         Hand hand = new Hand();
 
+        // Header Banner
+        System.out.println("************************************************************************");
+        System.out.println("*                    Zag Farkle by Darrell Cenido!                     *");
+        System.out.println("*                           Copyright: 2026                            *");
+        System.out.println("************************************************************************");
+        System.out.println();
+
+        // String player1Name = "Unknown Player";
+        System.out.println("Enter player 1 name: ");
+        String player1Name = scanner.nextLine();
+
+        if(player1Name.equals("")){
+            player1Name = "Unknown Player";
+        }
+
+        System.out.println();
+        System.out.println(player1Name + ", it is your turn! Rolling dice...");
+        System.out.println();
+
         hand.printHand();
         int[] counts = hand.getValQuantities();
 
@@ -43,7 +62,8 @@ public class FarkleGame {
 
             while (!done) {
                 System.out.println();
-                System.out.println("*************************** Current hand and meld *******************");
+                System.out.println("******************* Current hand and meld *******************");
+                System.out.println();
                 System.out.println(" Die   Hand |   Meld");
                 System.out.println("------------+---------------");
                 for (int i = 0; i < 6; i++) {
