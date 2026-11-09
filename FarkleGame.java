@@ -28,23 +28,62 @@ public class FarkleGame {
             targetPoints = Integer.parseInt(pointGoalInput);
         }
 
-        System.out.print("What is the player #1's name? [Unknown Player] ");
-        String player1Name = scanner.nextLine().trim();
+        System.out.print("How many players are going to be playing? [1] ");
+        String numPlayersInput = scanner.nextLine().trim();
+        int numPlayers = 1;
 
-        if (player1Name.isEmpty()) {
-            player1Name = "Unknown Player";
+        if (numPlayersInput.equals("2")) {
+            numPlayers = 2;
+        } else if (numPlayersInput.equals("3")) {
+            numPlayers = 3;
+        } else if (numPlayersInput.equals("4")) {
+            numPlayers = 4;
+        } else if (numPlayersInput.equals("5")) {
+            numPlayers = 5;
+        } else if (numPlayersInput.equals("6")) {
+            numPlayers = 6;
+        } else if (numPlayersInput.equals("7")) {
+            numPlayers = 7;
+        } else if (numPlayersInput.equals("8")) {
+            numPlayers = 8;
+        } else if (numPlayersInput.equals("9")) {
+            numPlayers = 9;
+        }
+
+        String[] defaultNamePool = {"Unknown player #1", "Unknown player #2", "Unknown player #3", 
+                                    "Unknown player #4", "Unknown player #5", "Unknown player #6", 
+                                    "Unknown player #7", "Unknown player #8", "Unknown player #9"};
+
+        ArrayList<String> playerNames = new ArrayList<>();
+        int[] playerScores = new int[numPlayers];
+
+        for (int i = 0; i < numPlayers; i++) {
+            int playerNum = i + 1;
+            String defaultName = (i < defaultNamePool.length) ? defaultNamePool[i] : "Unknown Player #" + playerNum;
+            
+            System.out.print("What is the player #" + playerNum + "'s name? [" + defaultName + "] ");
+            String inputName = scanner.nextLine().trim();
+            
+            if (inputName.isEmpty()) {
+                playerNames.add(defaultName);
+            } else {
+                playerNames.add(inputName);
+            }
         }
 
         System.out.println("----------------------------------");
         System.out.println();
 
-        int turnNumber = 1;
-        int totalScore = 0;
+int roundNumber = 1;
+        int currentPlayerIndex = 0;
         boolean hasQuit = false;
+        boolean gameWon = false;
 
-        while (totalScore < targetPoints && !hasQuit) {
-            System.out.println("--- Turn " + turnNumber + " ---");
-            System.out.println(player1Name + ", it is your turn! Rolling dice...");
+        while (!gameWon && !hasQuit) {
+            String currentName = playerNames.get(currentPlayerIndex);
+
+            System.out.println("--- Round " + roundNumber + ": " + currentName + "'s Turn ---");
+            System.out.println(currentName + ", it is your turn! Rolling dice...");
 
             Hand hand = new Hand();
             int turnScore = 0;
@@ -102,7 +141,6 @@ public class FarkleGame {
                     }
                     System.out.println("------------+---------------");
 
-                    // Prepare meld array for scoring calculation
                     int meldDiceCount = 0;
                     int[] meldDiceArray = {0, 0, 0, 0, 0, 0};
                     for (int i = 0; i < 6; i++) {
@@ -170,7 +208,7 @@ public class FarkleGame {
                                     }
                                     meldPhaseDone = true;
                                 } else {
-                                    totalScore += turnScore;
+                                    playerScores[currentPlayerIndex] += turnScore;
                                     meldPhaseDone = true;
                                     turnOver = true;
                                 }
@@ -215,20 +253,35 @@ public class FarkleGame {
 
             if (!hasQuit) {
                 System.out.println();
-                System.out.println("End of Turn " + turnNumber + ". " + player1Name + "'s total score is now: " + totalScore);
+                System.out.println("Current total points:");
+                for (int p = 0; p < numPlayers; p++) {
+                    System.out.println(playerNames.get(p) + "\t" + playerScores[p]);
+                }
                 System.out.println();
-                turnNumber++;
+
+                if (playerScores[currentPlayerIndex] >= targetPoints) {
+                    gameWon = true;
+                } else {
+                    currentPlayerIndex = (currentPlayerIndex + 1) % numPlayers;
+                    if (currentPlayerIndex == 0) {
+                        roundNumber++;
+                    }
+                }
             }
         }
 
         if (hasQuit) {
             System.out.println();
-            System.out.println(player1Name + " quit the game!");
+            System.out.println(playerNames.get(currentPlayerIndex) + " quit the game!");
             System.out.println();
         } else {
+            String winner = playerNames.get(currentPlayerIndex);
             System.out.println("************************************************************************");
-            System.out.println(" CONGRATULATIONS " + player1Name.toUpperCase() + "! YOU WON!");
-            System.out.println(" Final Score: " + totalScore + " points in " + (turnNumber - 1) + " turns.");
+            System.out.println(" CONGRATULATIONS " + winner.toUpperCase() + "! YOU WON!");
+            System.out.println(" Final Scores:");
+            for (int p = 0; p < numPlayers; p++) {
+                System.out.println(" " + playerNames.get(p) + "\t" + playerScores[p]);
+            }
             System.out.println("************************************************************************");
         }
     }
