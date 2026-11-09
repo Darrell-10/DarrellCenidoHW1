@@ -52,46 +52,63 @@ public class FarkleScorer{
                 isStraight = false;
             }
         }
-
         if (isStraight) {
             return 1000;
-        } else {
-            // Check 3 pairs
-            int meldPairCount = 0;
-            for (int i = 1; i < 7; i++) {
-                if (counts[i] == 2) {
-                    meldPairCount++;
-                }
-            }
-            if (meldPairCount == 3) {
-                return 750;
-            } else {
-                // Check triples +
-                for (int i = 1; i < 7; i++) {
-                    if (counts[i] >= 3) {
-                        int tripleSetPoints = 0;
-                        if (i == 1) {
-                            tripleSetPoints = 1000;
-                        } else {
-                            tripleSetPoints = i * 100;
-                        }
-                        if (counts[i] > 3) {
-                            tripleSetPoints += (counts[i] - 3) * 100 * i;
-                        }
-                        meldScore += tripleSetPoints;
-                    }
-                }
+        }
 
-                // Add 1's & 5's if unused in triples
-                if (counts[1] < 3) {
-                    meldScore += counts[1] * 100;
-                }
+        // Check full house
+        boolean hasThreeOfAKind = false;
+        boolean hasPair = false;
+        int totalDiceInMeld = 0;
 
-                if (counts[5] < 3) {
-                    meldScore += counts[5] * 50;
-                }
+        for (int i = 1; i < 7; i++) {
+            totalDiceInMeld += counts[i];
+            if (counts[i] == 3) {
+                hasThreeOfAKind = true;
+            } else if (counts[i] == 2) {
+                hasPair = true;
             }
         }
-        return meldScore;
+
+        boolean isFullHouse = (hasThreeOfAKind && hasPair && totalDiceInMeld == 5);
+        if (isFullHouse) {
+            return 1500;
+        }
+
+        // Check 3 pairs
+        int meldPairCount = 0;
+        for (int i = 1; i < 7; i++) {
+            if (counts[i] == 2) {
+                meldPairCount++;
+            }
+        }
+        if (meldPairCount == 3) {
+            return 750;
+        } else {
+            // Check triples +
+            for (int i = 1; i < 7; i++) {
+                if (counts[i] >= 3) {
+                    int tripleSetPoints = 0;
+                    if (i == 1) {
+                        tripleSetPoints = 1000;
+                    } else {
+                        tripleSetPoints = i * 100;
+                    }
+                    if (counts[i] > 3) {
+                        tripleSetPoints += (counts[i] - 3) * 100 * i;
+                    }
+                    meldScore += tripleSetPoints;
+                }
+            }
+
+            // Add 1's & 5's if unused in triples
+            if (counts[1] < 3) {
+                meldScore += counts[1] * 100;
+            }
+            if (counts[5] < 3) {
+                meldScore += counts[5] * 50;
+            }
+        }
+    return meldScore;
     }
 }
