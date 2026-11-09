@@ -74,10 +74,13 @@ public class FarkleGame {
         System.out.println("----------------------------------");
         System.out.println();
 
-int roundNumber = 1;
+        int roundNumber = 1;
         int currentPlayerIndex = 0;
         boolean hasQuit = false;
         boolean gameWon = false;
+
+        boolean endgameTriggered = false;
+        int endgameTurnsRemaining = 0;
 
         while (!gameWon && !hasQuit) {
             String currentName = playerNames.get(currentPlayerIndex);
@@ -141,6 +144,7 @@ int roundNumber = 1;
                     }
                     System.out.println("------------+---------------");
 
+                    // Prepare meld array for scoring calculation
                     int meldDiceCount = 0;
                     int[] meldDiceArray = {0, 0, 0, 0, 0, 0};
                     for (int i = 0; i < 6; i++) {
@@ -259,9 +263,25 @@ int roundNumber = 1;
                 }
                 System.out.println();
 
-                if (playerScores[currentPlayerIndex] >= targetPoints) {
+                if (!endgameTriggered && playerScores[currentPlayerIndex] >= targetPoints) {
+                    endgameTriggered = true;
+                    endgameTurnsRemaining = numPlayers - 1;
+
+                    if (numPlayers > 1) {
+                        System.out.println("========================================================================");
+                        System.out.println(" ENDGAME TRIGGERED! " + currentName + " reached " + playerScores[currentPlayerIndex] + " points!");
+                        System.out.println(" All other players get ONE final turn to try to beat their score!");
+                        System.out.println("========================================================================\n");
+                    }
+                } else if (endgameTriggered) {
+                    endgameTurnsRemaining--;
+                }
+
+                // Check if all endgame turns have completed
+                if (endgameTriggered && endgameTurnsRemaining <= 0) {
                     gameWon = true;
                 } else {
+                    // Advance turn to next player
                     currentPlayerIndex = (currentPlayerIndex + 1) % numPlayers;
                     if (currentPlayerIndex == 0) {
                         roundNumber++;
@@ -275,7 +295,16 @@ int roundNumber = 1;
             System.out.println(playerNames.get(currentPlayerIndex) + " quit the game!");
             System.out.println();
         } else {
-            String winner = playerNames.get(currentPlayerIndex);
+            int winningIndex = 0;
+            int highestScore = playerScores[0];
+            for (int p = 1; p < numPlayers; p++) {
+                if (playerScores[p] > highestScore) {
+                    highestScore = playerScores[p];
+                    winningIndex = p;
+                }
+            }
+
+            String winner = playerNames.get(winningIndex);
             System.out.println("************************************************************************");
             System.out.println(" CONGRATULATIONS " + winner.toUpperCase() + "! YOU WON!");
             System.out.println(" Final Scores:");

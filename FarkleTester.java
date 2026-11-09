@@ -9,6 +9,7 @@ public class FarkleTester {
         testPlayerName();
         testFarkleDetection();
         testCombosScoring();
+        testFullHouseScoring();
 
         System.out.println("\nAll tests completed!");
     }
@@ -63,6 +64,25 @@ public class FarkleTester {
         int[] singleOneCounts = {0, 1, 0, 0, 0, 0, 0};
         int singleScore = FarkleScorer.calculateMeldScore(singleOneCounts);
         assert singleScore == 100 : "Single 1 score expected 100, got " + singleScore;
+
+        System.out.println("PASSED");
+    }
+
+    /**
+     * Test that Full House combos score 1500 points.
+     */
+    public static void testFullHouseScoring() {
+        System.out.print("Testing Full House Combo Scoring... ");
+
+        // 1. Full House: Three 4s and two 2s (counts of 2, 2, and 4, 4, 4) -> 5 dice total
+        int[] fullHouseCounts1 = {0, 0, 2, 0, 3, 0, 0};
+        int score1 = FarkleScorer.calculateMeldScore(fullHouseCounts1);
+        assert score1 == 1500 : "Full House (3 4s, 2 2s) expected 1500, got " + score1;
+
+        // 2. Full House: Three 1s and two 2s -> Must return 1500, NOT 1500 + 1000 for triple 1s
+        int[] fullHouseCounts2 = {0, 3, 2, 0, 0, 0, 0};
+        int score2 = FarkleScorer.calculateMeldScore(fullHouseCounts2);
+        assert score2 == 1500 : "Full House (3 1s, 2 2s) expected 1500, got " + score2;
 
         System.out.println("PASSED");
     }
